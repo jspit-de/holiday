@@ -41,43 +41,18 @@ All holidays are dates defined in the table 'holidays' and names for all languag
 
 ### Fields of  holidays table:
 
-#### id
- 
-id, autoincrement, reference to 'idholiday' in the table names
+| Field | Description |
+| ----- | ----------- |
+| id | id, autoincrement, reference to 'idholiday' in the table names |
+| comment | a comment (not a name for a holiday) |
+| year | free or "*" for all years, a year YYYY for only this year, -YYYY to year, YYYY- from year, a range YYYY-YYYY, a list of years YYYY,YYYY,.. |
+| except_year | free for no exception, YYYY for except only this year, except a range YYYY-YYYY, except a list of years YYYY,YYYY,.., "*" except all |
+| month | used for fixed months |
+| day | used for fixed days |
+| special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: 'first sunday of september {{year}}|next thursday' , 'third sunday of september {{year}}' , '{{easter}}|+1 Day' |
+| region | A list auf Countrycodes/Regions. Countrycode-[[[Subdivision]-Subregion1]-Subregion2] |
+| typ | unused in the current version |
 
-#### comment:
- 
-a comment (not a name for a holiday)
-
-#### year
- 
-free or "*" for all years, a year YYYY for only this year, -YYYY to year, YYYY- from year, a range YYYY-YYYY, a list of years YYYY,YYYY,..
-
-#### except_year
- 
-free for no exception, YYYY for except only this year, except a range YYYY-YYYY, except a list of years YYYY,YYYY,.., "*" except all
-
-#### month
-
-used for fixed months
-
-#### day
-
-used for fixed days
-
-#### special
-
-A pipe with relative date formates and wildcards. Pipe elements are are separated by | .
-{{name}} is a wildcard. 
-Some examples:
-'first sunday of september {{year}}|next thursday'
-'third sunday of september {{year}}'
-'{{easter}}|+1 Day'
-
-#### region
-
-A list auf Countrycodes/Regions.
-Countrycode-[[[Subdivision]-Subregion1]-Subregion2]
 
 ### Fixed date every year
 
