@@ -49,7 +49,7 @@ All holidays are dates defined in the table 'holidays' and names for all languag
 | except_year | free for no exception, YYYY for except only this year, except a range YYYY-YYYY, except a list of years YYYY,YYYY,.., "*" except all |
 | month | used for fixed months |
 | day | used for fixed days |
-| special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: 'first sunday of september {{year}}|next thursday' , 'third sunday of september {{year}}' , '{{easter}}|+1 Day' |
+| special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: 'first sunday of september {{year}}\|next thursday' , 'third sunday of september {{year}}' , '{{easter}}\|+1 Day' |
 | region | A list auf Countrycodes/Regions. Countrycode-[[[Subdivision]-Subregion1]-Subregion2] |
 | typ | unused in the current version |
 
