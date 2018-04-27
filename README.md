@@ -2,6 +2,7 @@
 
 A php class for determining holidays for many countries, regions and languages.
 All defintions are in a small SQLite database that can be changed and expanded by the user.
+The database "holiday.sqlite" contains only examples and can be used without any claim to correctness and completeness.
 
 ## Usage
 
