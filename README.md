@@ -5,6 +5,8 @@ All defintions are in a small SQLite database that can be changed and expanded b
 
 ## Usage
 
+Include class holiday (1 File) directly with require or use a autoloader.
+
 ```php
 <?php
 $holiday = new holiday("DE-BB","holiday.sqlite"); 
@@ -35,6 +37,46 @@ Examples: "DE", "NL", "DE-BY", "DE-BY-SCH-A"
 Last for Germany-Bavaria-Schwabing-Augsburg(City). 
 The languages can be divided into dialects, e.g. 'de-DE' , 'de-CH'.
 
+Further examples:
+
+```php
+$dateTime = new DateTime("1 May 2018 08:00");
+
+$holidaysDE = holiday::create("DE","holiday.sqlite");
+if($holidaysDE->isHoliday($dateTime)) {
+  echo "1 May 2018 is in DE a holiday";
+}
+
+//holidayName
+$holidayName = $holidaysDE->holidayName('3 Oct','en');
+if($holidayName) {
+  echo $holidayName . "<br>";
+  //'Day of German Unity'
+}
+
+//holidayNameList
+$holidaysIL = holiday::create("IL","holiday.sqlite");
+$list = $holidaysIL->holidayNameList("Pessach I",2018,2022,'de');
+
+var_dump($list);
+/*
+array(5) {
+  ["2018-03-31"]=>
+  string(9) "Pessach I"
+  ["2019-04-20"]=>
+  string(9) "Pessach I"
+  ["2020-04-09"]=>
+  string(9) "Pessach I"
+  ["2021-03-28"]=>
+  string(9) "Pessach I"
+  ["2022-04-16"]=>
+  string(9) "Pessach I"
+}
+*/
+
+```
+
+
 ## Define country depending holidays
 
 All holidays are dates defined in the table 'holidays' and names for all languages in the table 'names'.
@@ -49,10 +91,9 @@ All holidays are dates defined in the table 'holidays' and names for all languag
 | except_year | free for no exception, YYYY for except only this year, except a range YYYY-YYYY, except a list of years YYYY,YYYY,.., "*" except all |
 | month | used for fixed months |
 | day | used for fixed days |
-| special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: 'first sunday of september {{year}}\|next thursday' , 'third sunday of september {{year}}' , '{{easter}}\|+1 Day' |
+| special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: "first sunday of september {{year}}\|next thursday" ,'third sunday of september {{year}}' , '{{easter}}\|+1 Day' |
 | region | A list auf Countrycodes/Regions. Countrycode-[[[Subdivision]-Subregion1]-Subregion2] |
 | typ | unused in the current version |
-
 
 ### Fixed date every year
 
@@ -114,6 +155,5 @@ For these cases, the date must be set for each year. With a special wildcard you
 | id  | comment          | year      | except_year | month | day | special               | region | 
 | --- | -----------------| --------- | ----------- | ----- | --- | --------------------- | -------| 
 | 35  | Independence Day | 2018-2020 |             |       |     | {{2018:4/19,5/9,4/29}}| IL     |
-
 
 
