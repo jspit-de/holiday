@@ -2,8 +2,8 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: Holiday - PHP class                                            |
-|   Version: 1.21                                                           |
-|      Date: 2018-04-26                                                     |
+|   Version: 1.23                                                           |
+|      Date: 2018-05-02                                                     |
 |      Site:                                                                |
 | ------------------------------------------------------------------------- |
 | Copyright © 2018, Peter Junk alias jspit All Rights Reserved.             |
@@ -120,7 +120,8 @@ class holiday
   }
 
  /*
-  * return array( date => holidayname, ..)
+  * return array( 'YYYY-MM-DD' => holidayname, ..)
+  * the array is sorted by ascending date
   * @param year integer full year p.E. 2018
   * @param $language string p.E. "en_GB"
   */
@@ -138,6 +139,26 @@ class holiday
     ksort($hList); 
     return $hList;
   }
+  
+ /*
+  * return array of datetime objects
+  * the array is sorted by ascending date
+  * datetime objects are extended with property holidayName
+  * @param year integer full year p.E. 2018
+  * @param $language string p.E. "en_GB"
+  */
+  public function dateTimeList($year = null, $language = null){
+    $dtArr = array();
+    foreach(self::holidayList($year, $language) as $strDate => $name) {
+      $dt = date_create($strDate);
+      if(is_object($dt)) {
+        $dt->holidayName = $name;
+        $dtArr[] = $dt;
+      }
+    }
+    return $dtArr;
+  }
+
 
  /*
   * return true id if date is a holiday or false
@@ -271,7 +292,6 @@ class holiday
     
     //check extends methods
     if(preg_match('~\{\{([a-z]+)\}\}~',$code,$match)) {
-      debug::write($code,$match);
       $methodName = $match[1];
       if(method_exists($this, $methodName)) {
         $replacement = $this->$methodName($year, $month, $day);
@@ -284,7 +304,18 @@ class holiday
     $modifiers = explode("|", $code);
     $date = date_create($year."-".$month."-".$day);
     foreach($modifiers as $modify) {
-      $date->modify($modify); 
+      if(preg_match('~^\{\{\?([DdmL]+)(!?=)([^}]+)\}\}(.*)~',$modify,$match)) {
+        $curFmt = $date->format($match[1]);
+        $found = stripos($match[3], $curFmt) !== false;
+        if($found === ($match[2] == "=")) {
+          //condition true
+          if($match[4] !== "") $date->modify($match[4]);
+        } elseif($match[4] === "") {
+          return false;
+        }
+      } else { 
+        $date->modify($modify);
+      }        
       $errArr = date_get_last_errors();
       if($errArr['error_count']) return false;
     }
@@ -418,6 +449,7 @@ class holiday
     if($row) return $row->name;
     return "?";
   }
+  
   
   
 }  
