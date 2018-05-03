@@ -186,3 +186,6 @@ For these cases, the date must be set for each year. With a special wildcard you
 | --- | -----------------| --------- | ----------- | ----- | --- | --------------------- | -------| --- |  
 | 35  | Independence Day | 2018-2020 |             |       |     | {{2018:4/19,5/9,4/29}}| IL     | 1   |
 
+## Requirements
+
+- PHP 5.4 - 7.2
