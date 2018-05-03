@@ -2,8 +2,8 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: Holiday - PHP class                                            |
-|   Version: 1.23                                                           |
-|      Date: 2018-05-02                                                     |
+|   Version: 1.24                                                           |
+|      Date: 2018-05-03                                                     |
 |      Site:                                                                |
 | ------------------------------------------------------------------------- |
 | Copyright © 2018, Peter Junk alias jspit All Rights Reserved.             |
@@ -12,17 +12,25 @@
 
 class holiday
 {
+  const TYPE_OFFICIAL = 1;
+  const TYPE_BANK = 2;
+  const TYPE_OBSERVED = 4;
+  const TYPE_OTHER = 8;
+  const TYPE_ALL = 0x7FFF;
+  
   public $pdo;
   protected $language = "de-DE";
   protected $region;
   protected $config;
+  protected $typFilter;
 
   /*
    * Constructs the class instance
    * @param $filterRegion string: Country/Region ISO 3361 Alpha2 ('DE','DE-BY'..) 
    * @param filename filename for SQLite, default: holiday.sqlite
+   * @param typFilter Filter for Holiday-Type for SQLite, default: holiday::TYPE_ALL
    */
-  public function __construct($filterRegion = "", $sqliteFile = null) {
+  public function __construct($filterRegion = "", $sqliteFile = null, $typFilter = self::TYPE_ALL) {
     //verify filter
     $filter = strtoupper($filterRegion);
     if(!preg_match('/^[A-Z]{2,3}(-[A-Z0-9]{1,8}){0,3}$/', $filter)) {
@@ -40,7 +48,7 @@ class holiday
       throw new Exception("Error new Class ".__CLASS__.": SQLite File '$sqliteFile' not found");
     }
     $this->pdo = new PDO('sqlite:'.$sqliteFile,null,null,$options);
-    if(! $this->createConfig($filterRegion)) {
+    if(! $this->createConfig($filterRegion, $typFilter)) {
       throw new Exception("Error new Class ".__CLASS__.": faulty SQLite-DB '$sqliteFile'");  
     }
     
@@ -51,8 +59,8 @@ class holiday
    * @param $filterRegion string: Country/Region ISO 3361 Alpha2 ('DE','DE-BY'..) 
    * @param filename filename for SQLite, default: holiday.sqlite
    */
-  public static function create($filterRegion = "", $sqliteFile = null) {
-    return new static($filterRegion,$sqliteFile);    
+  public static function create($filterRegion = "", $sqliteFile = null, $typFilter = self::TYPE_ALL) {
+    return new static($filterRegion, $sqliteFile, $typFilter );    
   }
   
   
@@ -77,7 +85,7 @@ class holiday
   * @param $filterRegion string: Country/Region ISO 3361 Alpha2 ('DE','DE-BY'..) 
   */
   public function setRegion($filterRegion) {
-    if($this->createConfig($filterRegion)) {
+    if($this->createConfig($filterRegion, $this->typFilter)) {
       return $this;
     }
     return false;
@@ -90,8 +98,17 @@ class holiday
     return $this->region;
   }
   
+ /*
+  * set Filter Holiday Type
+  * @param int typ Filter
+  */
+  public function setTypFilter($typFilter = self::TYPE_ALL) {
+    if($this->createConfig($this->region, $typFilter)) {
+      return $this;
+    }
+    return false;
+  }
 
-  
  /*
   * get Name from a Holiday p.e: "New Year's Day"
   * @param $date: string, datetime-object or timestamp 
@@ -405,10 +422,11 @@ class holiday
   }
   
   //create config-array
-  private function createConfig($filterRegion){
+  private function createConfig($filterRegion, $typFilter){
     $sql = "SELECT id, year, except_year, month, day, special, region
       FROM holidays 
-      ORDER BY except_year DESC, year DESC";
+      WHERE typ & ".(int)$typFilter.
+      " ORDER BY except_year DESC, year DESC";
     
     $stmt = $this->pdo->query($sql);
     if($stmt === false) return false;
@@ -422,6 +440,7 @@ class holiday
       if($match) $this->config[$row->id] = $row;
     }
     $this->region = $filterRegion;
+    $this->typFilter = $typFilter;
     return true;
   }
 
