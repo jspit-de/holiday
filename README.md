@@ -94,15 +94,15 @@ All holidays are dates defined in the table 'holidays' and names for all languag
 | day | used for fixed days |
 | special | A pipe with relative date formates and wildcards. Pipe elements are are separated by \| . {{name}} is a wildcard. Some examples: "first sunday of september {{year}}\|next thursday" ,'third sunday of september {{year}}' , '{{easter}}\|+1 Day' |
 | region | A list auf Countrycodes/Regions. Countrycode-[[[Subdivision]-Subregion1]-Subregion2] |
-| typ | unused in the current version |
+| typ | Type of holiday (TYPE_OFFICIAL, TYPE_BANK..) |
 
 ### Fixed date every year
 
 Table holidays
 
-| id  | comment     | year | except_year | month | day | special | region      | 
-| --- | ----------- | ---- | ----------- | ----- | --- | ------- | ----------- | 
-| 1   | NewYear     |      |             | 1     | 1   |         | DE,CH,AT,NL |
+| id  | comment     | year | except_year | month | day | special | region      | typ |
+| --- | ----------- | ---- | ----------- | ----- | --- | ------- | ----------- | --- | 
+| 1   | NewYear     |      |             | 1     | 1   |         | DE,CH,AT,NL | 1   |
 
 Table names
 
@@ -113,14 +113,23 @@ Table names
 |     | 1           | de-CH    | Neujahr        |
 |     | 1           | ru-RU    | Новый год      |
 
+### Fixed date for a year or rage of years
+
+Table holidays
+
+| id  | comment         | year  | except_year | month | day | special | region | typ | 
+| --- | --------------- | ----- | ----------- | ----- | --- | ------- | ------ | --- |  
+|     | Reformation Day | 2017  |             | 10    | 31  |         | DE     | 1   |
+|     | Day of Unity    | 1990- |             | 10    | 3   |         | DE     | 1   |
+
 ### Movable dates
 
 Table holidays
 
-| id  | comment        | year | except_year | month | day | special                            | region | 
-| --- | -------------- | ---- | ----------- | ----- | --- | ---------------------------------- | -------| 
-| 7   | Buß und Bettag |      |             | 11    | 23  | last Wed                           | DE-SN  |
-| 23  | Bettag         |      |             |       |     | third sunday of september {{year}} | CH     |
+| id  | comment        | year | except_year | month | day | special                            | region | typ |
+| --- | -------------- | ---- | ----------- | ----- | --- | ---------------------------------- | -------| --- |  
+| 7   | Buß und Bettag |      |             | 11    | 23  | last Wed                           | DE-SN  | 1   |
+| 23  | Bettag         |      |             |       |     | third sunday of september {{year}} | CH     | 1   |
 
 
 ### Dates depend on religious holidays
@@ -135,9 +144,9 @@ Others can be defined in an extension class.
 
 Table holidays
 
-| id  | comment     | year | except_year | month | day | special             | region      | 
-| --- | ----------- | ---- | ----------- | ----- | --- | ------------------- | ----------- | 
-| 8   | Ascension   |      |             |       |     | {{easter}}|+39 Days | DE,CH,AT,NL |
+| id  | comment     | year | except_year | month | day | special             | region      | typ | 
+| --- | ----------- | ---- | ----------- | ----- | --- | ------------------- | ----------- | --- |  
+| 8   | Ascension   |      |             |       |     | {{easter}}\|+39 Days | DE,CH,AT,NL | 1   |
 
 
 Table names
@@ -148,13 +157,32 @@ Table names
 |     | 8           | de-DE    | Christi Himmelfahrt | 
 |     | 8           | de-CH    | Auffahrt            |
 
+### Dates with filter conditions
+
+If a holiday is Sunday (or weekend), then in some countries  a substitute day in the following week is an additional holiday.
+Example: 
+The 5th of May is Children's Day in Japan. Is the 5th of May a Sunday (or the 6th of May a Monday),
+then the 6th of May is a holiday. You can define this date with a filter condition.
+
+Table holidays
+
+| id  | comment        | year | except_year | month | day | special             | region | typ | 
+| --- | -------------- | ---- | ----------- | ----- | --- | ------------------- | ------ | --- |  
+|     | Childrens Day  |      |             |  5    | 5   |                     | JP     | 1   |
+|     | Childrens Day+ |      |             |  5    | 6   | {{?D=Mon}}          | JP     | 2   |
+
+### Dates with movement conditions
+
+A holiday date will be postponed under certain conditions. 
+If an operation is noted after the condition, then it will only be executed if the condition is true.
+Example for special entry: {{?D=Thu}}+1 Day
+
 ### Dates without formula
 
 Some dates of holidays can not be described by a rule or it is too difficult to do that.
 For these cases, the date must be set for each year. With a special wildcard you can create a list for next years.
 
-| id  | comment          | year      | except_year | month | day | special               | region | 
-| --- | -----------------| --------- | ----------- | ----- | --- | --------------------- | -------| 
-| 35  | Independence Day | 2018-2020 |             |       |     | {{2018:4/19,5/9,4/29}}| IL     |
-
+| id  | comment          | year      | except_year | month | day | special               | region | typ | 
+| --- | -----------------| --------- | ----------- | ----- | --- | --------------------- | -------| --- |  
+| 35  | Independence Day | 2018-2020 |             |       |     | {{2018:4/19,5/9,4/29}}| IL     | 1   |
 
