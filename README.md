@@ -2,15 +2,15 @@
 
 A php class for determining holidays for many countries, regions and languages.
 All defintions are in a small SQLite database that can be changed and expanded by the user.
-The database "holiday.sqlite" contains only examples and can be used without any claim to correctness and completeness.
+The database "JspitHoliday.sqlite" contains only examples and can be used without any claim to correctness and completeness.
 
 ## Usage
 
-Include class holiday (1 File) directly with require or use a autoloader.
+Include class JspitHoliday (1 File) directly with require or use a autoloader.
 
 ```php
 <?php
-$holiday = new holiday("DE-BB","holiday.sqlite"); 
+$holiday = new JspitHoliday("DE-BB","JspitHoliday.sqlite"); 
 $holidayList = $holiday->holidayList(2018,'en')
 
 ```
@@ -43,7 +43,7 @@ Further examples:
 ```php
 $dateTime = new DateTime("1 May 2018 08:00");
 
-$holidaysDE = holiday::create("DE","holiday.sqlite");
+$holidaysDE = JspitHoliday::create("DE","JspitHoliday.sqlite");
 if($holidaysDE->isHoliday($dateTime)) {
   echo "1 May 2018 is in DE a holiday";
 }
@@ -56,7 +56,7 @@ if($holidayName) {
 }
 
 //holidayNameList
-$holidaysIL = holiday::create("IL","holiday.sqlite");
+$holidaysIL = JspitHoliday::create("IL","JspitHoliday.sqlite");
 $list = $holidaysIL->holidayNameList("Pessach I",2018,2022,'de');
 
 var_dump($list);
@@ -74,6 +74,16 @@ array(5) {
   string(9) "Pessach I"
 }
 */
+
+/*
+ * get Config from a URL
+ */
+$url = "http://example.com/data/JspitHoliday.sqlite";
+$tmpfname = tempnam(sys_get_temp_dir(), "holiday.sqlite");
+$copyOk = copy($url,$tmpfname);
+
+$holidaysDE = new JspitHoliday('de',$tmpfname);
+
 
 ```
 
@@ -188,4 +198,4 @@ For these cases, the date must be set for each year. With a special wildcard you
 
 ## Requirements
 
-- PHP 5.4 - 7.2
+PHP 5.4 - 7.2
