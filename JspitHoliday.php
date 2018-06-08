@@ -2,8 +2,8 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: JspitHoliday - PHP class                                       |
-|   Version: 1.25                                                           |
-|      Date: 2018-05-08                                                     |
+|   Version: 1.27                                                           |
+|      Date: 2018-06-07                                                     |
 | ------------------------------------------------------------------------- |
 | Copyright © 2018, Peter Junk alias jspit All Rights Reserved.             |
 '---------------------------------------------------------------------------'
@@ -21,7 +21,7 @@ class JspitHoliday
   const TYPE_ALL = 0x7FFF;
   
   protected $pdo;
-  protected $language = "de-DE";
+  protected $language = "en-GB";
   protected $region;
   protected $config;
   protected $typFilter;
@@ -36,7 +36,7 @@ class JspitHoliday
   public function __construct($filterRegion = "", $sqliteFile = null, $typFilter = self::TYPE_ALL) {
     //verify filter
     $filter = strtoupper($filterRegion);
-    if(!preg_match('/^[A-Z]{2,3}(-[A-Z0-9]{1,8}){0,3}$/', $filter)) {
+    if(!preg_match('/^[A-Z]{2,3}(-[A-Z0-9]{1,8}){0,3}\-?\*?$/', $filter)) {
       throw new InvalidArgumentException("filterRegion is not like ISO3361");  
     }
         
@@ -79,7 +79,7 @@ class JspitHoliday
   * @param string $language p.E. "de-DE", "en-GB" 
   * @return $this
   */
-  public function setLanguage($language = "de-DE") {
+  public function setLanguage($language = "en-GB") {
     $this->language = $language;
     return $this;
   }
@@ -309,6 +309,9 @@ class JspitHoliday
   * return false if error
   */
   protected function getMovableDate($code, $year, $month = 1, $day = 1){
+    if(empty($code)) {
+      return sprintf("%04d-%02d-%02d",$year, $month, $day);
+    }
     $replacements = array(
       '{{year}}' => $year,
       '{{month}}' => $month,
@@ -320,18 +323,6 @@ class JspitHoliday
     
     foreach($replacements as $key => $value){
       $code = str_replace($key, $value, $code); 
-    }
-    
-    //check for datelist {{2018:2/3,..}}
-    if(preg_match('~\{\{(\d{4}):(.*)\}\}~',$code,$match)) {
-      $startYear = $match[1];
-      $values = explode(",",$match[2]);
-      $key = $year - $startYear; 
-      if(array_key_exists($key,$values)) {
-        $code = str_replace($match[0],$values[$key],$code);
-      } else {
-        return false;
-      }
     }
     
     //check extends methods
@@ -348,7 +339,21 @@ class JspitHoliday
     $modifiers = explode("|", $code);
     $date = date_create($year."-".$month."-".$day);
     foreach($modifiers as $modify) {
-      if(preg_match('~^\{\{\?([DdmL]+)(!?=)([^}]+)\}\}(.*)~',$modify,$match)) {
+      //check for datelist {{2018:2/3,..}}
+      if(preg_match('~\{\{(\d{4}):(.*)\}\}~',$modify,$match)) {
+        $startYear = $match[1];
+        $values = explode(",",$match[2]);
+        $key = $year - $startYear; 
+        if(array_key_exists($key,$values)) {
+          $modify = str_replace($match[0],$values[$key],$modify);
+        } else {
+          //if year not exist in list get static day and month
+          $modify = $month."/".$day;
+        }
+        $date->modify($modify);
+      }
+
+      elseif(preg_match('~^\{\{\?([DdmLY]+)(!?=)([^}]+)\}\}(.*)~',$modify,$match)) {
         $curFmt = $date->format($match[1]);
         $found = stripos($match[3], $curFmt) !== false;
         if($found === ($match[2] == "=")) {
@@ -449,7 +454,9 @@ class JspitHoliday
   }
   
   //create config-array
-  private function createConfig($filterRegion, $typFilter){
+  private function createConfig($region, $typFilter){
+    $filterRegion = preg_replace('~\-?\*$~','',$region);
+    $allOption = $filterRegion != $region; //de*
     $sql = "SELECT id, year, except_year, month, day, special, region
       FROM holidays 
       WHERE typ & ".(int)$typFilter.
@@ -462,7 +469,11 @@ class JspitHoliday
     foreach($stmt as $row){
       $dbRegios = explode(",",$row->region);
       foreach($dbRegios as $region) {
-        if($match = (stripos($filterRegion,$region) === 0)) break;
+        if($allOption) {
+          if ($match = (stripos($region,$filterRegion) === 0)) break;
+        } else {       
+          if($match = (stripos($filterRegion,$region) === 0)) break;
+        }
       }
       if($match) $this->config[$row->id] = $row;
     }
