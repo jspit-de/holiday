@@ -29,36 +29,45 @@ class JspitHoliday
   /**
    * Constructs the class instance
    * @param string $filterRegion Country/Region ISO 3361 Alpha2 ('DE','DE-BY'..) 
-   * @param string $sqliteFile filename for SQLite, default: holiday.sqlite
+   * @param string $db filename for SQLite or PDO Object, default: holiday.sqlite
    * @param int $typFilte Filter for Holiday-Type for SQLite, default: holiday::TYPE_ALL
    * @throws InvalidArgumentException
    */
-  public function __construct($filterRegion = "", $sqliteFile = null, $typFilter = self::TYPE_ALL) {
+  public function __construct($filterRegion = "", $db = null, $typFilter = self::TYPE_ALL) {
     //verify filter
     $filter = strtoupper($filterRegion);
     if(!preg_match('/^[A-Z]{2,3}(-[A-Z0-9]{1,8}){0,3}\-?\*?$/', $filter)) {
       throw new InvalidArgumentException("filterRegion is not like ISO3361");  
     }
-        
-    if(! is_string($sqliteFile) OR $sqliteFile == "") {
-      $sqliteFile = __DIR__ . "/".basename(__CLASS__).".sqlite";
+     
+    if($db instanceof PDO) {
+      try{  
+        $this->pdo = $db;
+        $this->createConfig($filterRegion, $typFilter);
+      } catch(Exception $e) {
+        throw new InvalidArgumentException("Faulty PDO-Connection");  
+      }
     }
-    if(!file_exists($sqliteFile)){
-      throw new InvalidArgumentException("SQLite File '$sqliteFile' not found");
-    }
-    try{
-      $options = array(
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-      );
+    else {    
+      if(! is_string($db) OR $db == "") {
+        $db = __DIR__ . "/".basename(__CLASS__).".sqlite";
+      }
+      if(!file_exists($db)){
+        throw new InvalidArgumentException("SQLite File '$db' not found");
+      }
+      try{
+        $options = array(
+          PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+        );
 
-      $this->pdo = new PDO('sqlite:'.$sqliteFile,null,null,$options);
-      
-      $this->createConfig($filterRegion, $typFilter);
-    } catch(Exception $e) {
-      throw new InvalidArgumentException("Faulty SQLite-DB '$sqliteFile'");  
+        $this->pdo = new PDO('sqlite:'.$db,null,null,$options);
+        
+        $this->createConfig($filterRegion, $typFilter);
+      } catch(Exception $e) {
+        throw new InvalidArgumentException("Faulty SQLite-DB '$sqliteFile'");  
+      }
     }
-    
   }
   
  /**
