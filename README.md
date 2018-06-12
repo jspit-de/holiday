@@ -2,7 +2,18 @@
 
 A php class for determining holidays for many countries, regions and languages.
 All defintions are in a small SQLite database that can be changed and expanded by the user.
-The database "JspitHoliday.sqlite" contains only examples and can be used without any claim to correctness and completeness.
+The database "JspitHoliday.sqlite" currently supports the following countries
+
+  "DE":Germany, "AT":Austria, "NL":Netherlands, "DK":Denmark, "FR":France,
+  "IT":Italy(*), "ES":Spain(*), "LU":Luxembourg, "BE":Belgium(*),
+  "GR":Greece, "SK":Slovakia, "IE":Ireland, "CY":Cyprus, "PT":Portugal,
+  "EE":Estonia, "FI":Finland, "LV":Latvia, "LT":Lithuania, "MT":Malta
+  "CZ":Czech Republic, "PL":Poland, "CH":Switzerland, "GB":Great Britain(*),
+  "US":United States(*), "JP":Japan
+
+  (*) without regional holidays
+
+ Database can be used without any claim to correctness and completeness.
 
 ## Usage
 
