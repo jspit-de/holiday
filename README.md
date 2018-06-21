@@ -9,7 +9,7 @@ The database "JspitHoliday.sqlite" currently supports the following countries
   "GR":Greece, "SK":Slovakia, "IE":Ireland, "CY":Cyprus, "PT":Portugal,
   "EE":Estonia, "FI":Finland, "LV":Latvia, "LT":Lithuania, "MT":Malta
   "CZ":Czech Republic, "PL":Poland, "CH":Switzerland, "GB":Great Britain(\*),
-  "US":United States(\*), "JP":Japan
+  "SE":Sweden,"US":United States(\*), "JP":Japan
 
   (*) without regional holidays
 
