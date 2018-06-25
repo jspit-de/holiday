@@ -5,11 +5,11 @@ All defintions are in a small SQLite database that can be changed and expanded b
 The database "JspitHoliday.sqlite" currently supports the following countries
 
   "DE":Germany, "AT":Austria, "NL":Netherlands, "DK":Denmark, "FR":France,
-  "IT":Italy(\*), "ES":Spain(\*), "LU":Luxembourg, "BE":Belgium(\*),
+  "IT":Italy, "ES":Spain(\*), "LU":Luxembourg, "BE":Belgium,
   "GR":Greece, "SK":Slovakia, "IE":Ireland, "CY":Cyprus, "PT":Portugal,
   "EE":Estonia, "FI":Finland, "LV":Latvia, "LT":Lithuania, "MT":Malta
   "CZ":Czech Republic, "PL":Poland, "CH":Switzerland, "GB":Great Britain(\*),
-  "SE":Sweden,"US":United States(\*), "JP":Japan
+  "SE":Sweden,"US":United States(\*),"JP":Japan,"RU:Russia
 
   (*) without regional holidays
 
