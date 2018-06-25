@@ -15,7 +15,7 @@ $urlIcs = "https://www.officeholidays.com/ics/ics_country_code.php";
 $lang = "en";
 $publicHoliday = true; //not non public holidays
 
-$countrieRegion = array(
+$countryRegion = array(
   //true check with regional holidays
   //Euro countries
   "DE" => true, //Germany
@@ -57,9 +57,9 @@ $years = array(date("Y")-1,date("Y"),date("Y")+1);
 
 $t = new PHPcheck;  //test-class
 
-foreach($countrieRegion as $countrie => $regionalHoliday) {
-  $icsReader = new icsEventReader($urlIcs, $countrie);
-  $holiday = new JspitHoliday($countrie."*"); 
+foreach($countryRegion as $country => $regionalHoliday) {
+  $icsReader = new icsEventReader($urlIcs, $country);
+  $holiday = new JspitHoliday($country."*"); 
   
   foreach($years as $year) {
     $icsReader->reset();  //for getNextEvent
