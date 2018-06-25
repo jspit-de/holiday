@@ -2,8 +2,8 @@
 /**
 *
 * @license http://opensource.org/licenses/MIT
-* @version 1.0
-* @date: 2018-06-05
+* @version 1.1
+* @date: 2018-06-25
 * Copyright © 2018, Peter Junk (alias jspit). All Rights Reserved. 
 */
 
@@ -28,6 +28,14 @@ class icsEventReader
       'iso' => $isoCountry,
     )); 
     $this->content = file_get_contents($url."?".$query);
+    $codePage = mb_detect_encoding($this->content,"CP1252,ISO-8859-1,UTF-8", true);
+    if($codePage !== false AND $codePage != "UTF-8") {
+      $this->content = mb_convert_encoding(
+        html_entity_decode($this->content, ENT_COMPAT, $codePage),
+        "UTF-8", 
+        $codePage
+      );
+    }
   }
   
  /*
