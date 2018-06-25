@@ -16,16 +16,17 @@ $lang = "en";
 $publicHoliday = true; //not non public holidays
 
 $countrieRegion = array(
+  //true check with regional holidays
   //Euro countries
   "DE" => true, //Germany
   "AT" => true, //Austria 
   "NL" => true, //Netherlands
   "DK" => true, //Denmark
   "FR" => true, //France
-  "IT" => false,//Italy
+  "IT" => true, //Italy
   "ES" => false,//Spain
   "LU" => true, //Luxembourg
-  "BE" => false,//Belgium
+  "BE" => true, //Belgium
   "GR" => true, //Greece
   "SK" => true, //Slovakia
   "IE" => true, //Ireland
@@ -46,14 +47,13 @@ $countrieRegion = array(
   "GB" => false,//Great Britain
   "US" => false,//United States 
   "JP" => true, //Japan
-
-  
+  "RU" => true, //Russia
 
 );
 
 //all years for check
 $years = array(date("Y")-1,date("Y"),date("Y")+1);
-$years = array(2018);
+//$years = array(2019);
 
 $t = new PHPcheck;  //test-class
 
@@ -71,5 +71,5 @@ foreach($countrieRegion as $countrie => $regionalHoliday) {
   }
 }
 
-//Ausgabe 
+//Output
 echo $t->getHtml();
