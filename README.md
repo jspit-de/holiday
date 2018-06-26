@@ -102,6 +102,11 @@ $holidaysDE = new JspitHoliday('de',$tmpfname);
 ## Define country depending holidays
 
 All holidays are dates defined in the table 'holidays' and names for all languages in the table 'names'.
+Working with SQLite database will be easy if you use a tool like DB Browser for SQLite ( http://sqlitebrowser.org ) and
+the test enviroment phpcheck. Download as zip and unzip in a public directory.
+Then you can call phpcheck.JspitHolidayOffice.php in the browser. Edit the Source of phpcheck.JspitHolidayOffice.php. 
+Take the big list of countries in comment and use your country for that. 
+Check after each new database entry if the holiday date is correctly determined.
 
 ### Fields of  holidays table:
 
