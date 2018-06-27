@@ -16,6 +16,7 @@ $lang = "en";
 $publicHoliday = true; //not non public holidays
 
 $countryRegion = array(
+
   //true check with regional holidays
   //Euro countries
   "DE" => true, //Germany
@@ -43,12 +44,17 @@ $countryRegion = array(
   "PL" => true, //Poland
   "CH" => true, //Switzerland
   "SE" => true, //Sweden
+  "BG" => true, //Bulgaria
+  "HR" => true, //Croatia
+  "RO" => true, //Romania
+  "SI" => true, //Slovenia
+  "HU" => true, //Hungary
 
   "GB" => false,//Great Britain
   "US" => false,//United States 
   "JP" => true, //Japan
   "RU" => true, //Russia
-
+ 
 );
 
 //all years for check
@@ -64,9 +70,15 @@ foreach($countryRegion as $country => $regionalHoliday) {
   foreach($years as $year) {
     $icsReader->reset();  //for getNextEvent
     while($icsEvent = $icsReader->getNextEvent($year, $publicHoliday, $regionalHoliday)) {
-      $t->start($icsEvent->date." ".$icsEvent->location." ".$icsEvent->description);
-      $result = $holiday->holidayName($icsEvent->date,$lang);
-      $t->check($result, $result !== false AND $result != "?");
+      if($icsEvent->location !== false) {
+        $t->start($icsEvent->date." ".$icsEvent->location." ".$icsEvent->description);
+        $result = $holiday->holidayName($icsEvent->date,$lang);
+        $t->check($result, $result !== false AND $result != "?");
+      }
+      else {
+        $t->start('Unknown country '.$country);
+        $t->check($country, false);
+      }
     }
   }
 }
