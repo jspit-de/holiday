@@ -2,8 +2,8 @@
 /**
 *
 * @license http://opensource.org/licenses/MIT
-* @version 1.2
-* @date: 2018-06-26
+* @version 1.31
+* @date: 2018-06-27
 * Copyright © 2018, Peter Junk (alias jspit). All Rights Reserved. 
 */
 
@@ -26,8 +26,17 @@ class icsEventReader
     }
     $query = http_build_query(array(
       'iso' => $isoCountry,
-    )); 
-    $this->content = file_get_contents($url."?".$query);
+    ));
+    
+    $context = stream_context_create(array(
+      "ssl"=>array(
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+        ),
+      )
+    );
+    
+    $this->content = file_get_contents($url."?".$query,false,$context);
     if($this->content === false) {
       throw new Exception("Failed to open stream URL: ".$url); 
     }
