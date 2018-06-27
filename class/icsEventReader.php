@@ -21,6 +21,12 @@ class icsEventReader
 
   public function __construct($url = null, $isoCountry = "DE")
   {
+    if(!ini_get("allow_url_fopen")) {
+      throw new RuntimeException("allow_url_fopen must be allowed in your configuration"); 
+    }
+    if(!extension_loaded('openssl')) {
+      throw new RuntimeException("need openssl extension");
+    }
     if(empty($url)) {
       $url = "https://www.officeholidays.com/ics/ics_country_code.php"; 
     }
@@ -38,10 +44,10 @@ class icsEventReader
     
     $this->content = file_get_contents($url."?".$query,false,$context);
     if($this->content === false) {
-      throw new Exception("Failed to open stream URL: ".$url); 
+      throw new RuntimeException("Failed to open stream URL: ".$url); 
     }
     if(stripos($this->content,'VCALENDAR') === false) {
-      throw new Exception("Wrong content from URL: ".$url); 
+      throw new RuntimeException("Wrong content from URL: ".$url); 
     }
 
     $codePage = mb_detect_encoding($this->content,"CP1252,ISO-8859-1,UTF-8", true);
