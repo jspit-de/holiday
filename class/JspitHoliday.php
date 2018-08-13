@@ -2,8 +2,8 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: JspitHoliday - PHP class                                       |
-|   Version: 1.27                                                           |
-|      Date: 2018-06-07                                                     |
+|   Version: 1.30                                                           |
+|      Date: 2018-08-09                                                     |
 | ------------------------------------------------------------------------- |
 | Copyright © 2018, Peter Junk alias jspit All Rights Reserved.             |
 '---------------------------------------------------------------------------'
@@ -321,28 +321,42 @@ class JspitHoliday
     if(empty($code)) {
       return sprintf("%04d-%02d-%02d",$year, $month, $day);
     }
-    $replacements = array(
-      '{{year}}' => $year,
-      '{{month}}' => $month,
-      '{{day}}' => $day,
-      '{{easter}}' => $this->getEasterDate($year),
-      '{{easter_o}}' => $this->getEasterDate($year,true),
-      '{{passover}}' => $this->getPassoverDate($year),
-    );
-    
-    foreach($replacements as $key => $value){
-      $code = str_replace($key, $value, $code); 
-    }
-    
-    //check extends methods
-    if(preg_match('~\{\{([a-z]+)\}\}~',$code,$match)) {
-      $methodName = $match[1];
-      if(method_exists($this, $methodName)) {
-        $replacement = $this->$methodName($year, $month, $day);
-        $code = str_replace($match[0],$replacement,$code);
-      } else { //error
-        throw new Exception("Error ".__CLASS__.": unknown special entry ".$match[0]); 
-      }      
+    if(strpos($code,'}}')) {
+      $callback = function($match) use($year, $month, $day){
+        $m0 = $match[0];
+        $c = __CLASS__;
+        if($m0 == '{{year}}') return $year;
+        if($m0 == '{{month}}') return $month;
+        if($m0 == '{{day}}') return $day;
+        if($m0 == '{{easter}}') return $c::getEasterDate($year);
+        if($m0 == '{{easter_o}}') return $c::getEasterDate($year, true);
+        if($m0 == '{{passover}}') return $c::getPassoverDate($year);
+        if($m0 == '{{islamic}}') return $c::getHijriDate($year, $month, $day);
+        if($m0 == '{{hebrew}}') return $c::getJewishDate($year, $month, $day);  //jewish
+        if(extension_loaded('intl')) {
+          $intlCalendars = array(
+            '{{japanese}}','{{buddhist}}','{{chinese}}','{{persian}}',
+            '{{indian}}','{{coptic}}','{{ethiopic}}'
+          );
+          if(in_array($m0,$intlCalendars)) {
+            return $c::getCalendarDate(trim($m0,'{}'), $month, $day, $year);  
+          }
+        }
+        return $m0;  //not replace
+      };
+      $code = preg_replace_callback('~\{\{[a-z_]+\}\}~', $callback, $code);
+      
+      
+      //check extends methods
+      if(preg_match('~\{\{([a-z]+)\}\}~',$code,$match)) {
+        $methodName = $match[1];
+        if(method_exists($this, $methodName)) {
+          $replacement = $this->$methodName($year, $month, $day);
+          $code = str_replace($match[0],$replacement,$code);
+        } else { //error
+          throw new Exception("Error ".__CLASS__.": unknown special entry ".$match[0]); 
+        }      
+      }
     }
     
     $modifiers = explode("|", $code);
@@ -382,7 +396,7 @@ class JspitHoliday
    }
   
   //get easter-date as string YYYY-MM-DD
-  protected function getEasterDate($year,$orthodox = false){
+  public static function getEasterDate($year,$orthodox = false){
     if($orthodox) {
       $flag = CAL_EASTER_ALWAYS_JULIAN;
       $basisDate = $year."-4-3";
@@ -403,7 +417,7 @@ class JspitHoliday
   * @params: $year integer as YYYY, interval 1900 to 2099
   * @return date as string YYY-MM-DD
   */
-  protected function getPassoverDate($year){
+  public static function getPassoverDate($year){
     $a = (12*$year+12)%19; 
     $b = $year%4;
     $m = 20.0955877 + 1.5542418 * $a + 0.25 * $b - 0.003177794 * $year; 
@@ -420,7 +434,113 @@ class JspitHoliday
     return date_create($year."-3-13")
       ->modify($mi." Days")
       ->format("Y-m-d"); 
+  }
+  
+ /* 
+  * get the gregorian Date for the year $gregYear
+  * @param integer $gregYear: greg.Year (2007..2031)
+  * @param integer $hijriMonth: Month hijri-Calendar
+  * @param integer $hijriMonth: Month hijri-Calendar
+  * @return date as string YYY-MM-DD or false if error
+  */
+  public static function getHijriDate($gregYear, $hijriMonth, $hijriDay) {
+    $gy = $gregYear;
+    for($i=0;$i<3;$i++){
+      $hijri = self::GregToHijri($gy,1,1);
+      $greg  = self::HijriToGreg($hijri[0],$hijriMonth,$hijriDay);
+      if($greg[0] == $gregYear) {
+        return sprintf("%04d-%02d-%02d",$greg[0],$greg[1],$greg[2]);
+      }
+      $gy += ($greg[0] < $gy) ? 1 : -1;
+    }
+    return false;
   }  
+
+ /*
+  * convert Gregorian Date to Hijri
+  * return array($year, $month, $day)
+  */  
+  public static function GregToHijri($y,$m,$d)
+  {
+      $jd = gregoriantojd ($m, $d, $y);
+      $days360month = 10631;
+      $y = $days360month / 30.0;
+      $shift1 = 8.01 / 60.0;
+      $z = $jd - 1948085; //-$epochAstro
+      $cyc = floor($z / $days360month);
+      $z = $z - $days360month * $cyc;
+      $j = floor(($z - $shift1) / $y);
+      $z = $z - floor($j * $y + $shift1);
+      $year = 30 * $cyc + $j;
+      $month = (int)floor(($z + 28.5001) / 29.5);
+      if ($month == 13) $month = 12;
+      $day = $z - floor(29.5001 * $month - 29);
+      return array($year,$month,$day);
+  }
+
+ /*
+  * convert Hijri Date to Gregorian
+  * return array($year, $month, $day)
+  */  
+  public static function HijriToGreg($y,$m,$d){
+   $jd = (int)((11 * $y + 3) / 30) + 354 * $y + 
+     30 * $m - (int)(($m - 1) / 2) + $d + 1948440 - 385;
+   list($month,$day,$year) = explode("/", jdtogregorian($jd));
+   return array($year,$month,$day);
+  }
+  
+ /*
+  * return string date YYYY-MM-DD;
+  */
+  public static function getJewishDate($gregYear, $jewishMonth, $jewishDay) {
+    $gy = $gregYear;
+    for($i=0;$i<3;$i++){
+      $jd1 = gregoriantojd(1,1,$gy);
+      $jw1 = jdtojewish($jd1);  //"Monat/Tag/Jahr"
+      list($jmonth,$jday,$jyear) = explode("/",$jw1);
+      $jd = jewishtojd($jewishMonth,$jewishDay,$jyear);
+      $greg = jdtogregorian($jd);
+      list($gmonth,$gday,$gyear) = explode("/",$greg);
+      if($gyear == $gregYear) {
+        return sprintf("%04d-%02d-%02d",$gyear,$gmonth,$gday);
+      }
+      $gy += ($gyear < $gy) ? 1 : -1;
+    }
+    return false;
+  }
+
+ /*
+  * get greg.Date from $calMonth and $calDay in calendar $cal
+  * return string date "Y-m-d" or false if error
+  */
+  public static function getCalendarDate($calendar, $calMonth, $calDay, $gregYear){
+    if(!extension_loaded('intl')) return false;
+    $formatter = IntlDateFormatter::create(
+      'de_DE', 
+      IntlDateFormatter::FULL, 
+      IntlDateFormatter::FULL,
+      null, 
+      IntlDateFormatter::GREGORIAN,
+      'yyyy-MM-dd'
+    );
+    
+    $cal = IntlCalendar::createInstance(null, "@calendar={$calendar}");
+    
+    $gy = $gregYear;
+    for($i=0;$i<3;$i++){
+      $msTs = mktime(0,0,0,1,1,$gy) * 1000.0;
+      $cal->setTime($msTs);
+      $cal->set(IntlCalendar::FIELD_MONTH, $calMonth-1); //month-1 !
+      $cal->set(IntlCalendar::FIELD_DAY_OF_MONTH, $calDay); 
+      $gregDate = $formatter->format($cal);
+      $gyear = (int)substr($gregDate,0,4);
+      if($gyear == $gregYear) return $gregDate;
+      $gy += ($gyear < $gy) ? 1 : -1;
+    }
+    return false;  
+  }  
+  
+
 
 
  /*
