@@ -167,6 +167,7 @@ You can use this wildcards:
 {{easter_o}}  Orthodox Easter
 {{passover}}  Passover I
 
+
 Others can be defined in an extension class.
 
 Table holidays
@@ -183,6 +184,30 @@ Table names
 |     | 8           | en-GB    | Ascension of Christ | 
 |     | 8           | de-DE    | Christi Himmelfahrt | 
 |     | 8           | de-CH    | Auffahrt            |
+
+### Dates depend on other calendars
+
+The first wildcard can mark a calendar. The entries day and date refer to this calendar.
+{{islamic}}   islamic calendar
+{{hebrew}}    hebrew calendar
+
+The following calendars can still be used, if the intl extension is available:
+{{japanese}}
+{{buddhist}}
+{{chinese}}
+{{persian}}
+{{indian}}
+{{coptic}}
+{{ethiopic}}
+
+Example:
+The Chinese New Year is celebrated on the first day and first month of the traditional Chinese calendar.
+
+Table holidays
+
+| id  | comment           | year | except_year | month | day | special             | region | typ | 
+| --- | ----------------- | ---- | ----------- | ----- | --- | ------------------- | ------ | --- |  
+|     | Chinese New Year  |      |             |  1    | 1   | {{chinese}}         | CN     | 1   |
 
 ### Dates with filter conditions
 
