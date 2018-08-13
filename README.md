@@ -186,17 +186,17 @@ Table names
 ### Dates depend on other calendars
 
 The first wildcard can mark a calendar. The entries day and date refer to this calendar.
-{{islamic}}   islamic calendar
-{{hebrew}}    hebrew calendar
+- {{islamic}}   islamic calendar
+- {{hebrew}}    hebrew calendar
 
 The following calendars can still be used, if the intl extension is available:
-{{japanese}}
-{{buddhist}}
-{{chinese}}
-{{persian}}
-{{indian}}
-{{coptic}}
-{{ethiopic}}
+- {{japanese}}
+- {{buddhist}}
+- {{chinese}}
+- {{persian}}
+- {{indian}}
+- {{coptic}}
+- {{ethiopic}}
 
 Example:
 The Chinese New Year is celebrated on the first day and first month of the traditional Chinese calendar.
