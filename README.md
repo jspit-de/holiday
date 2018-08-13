@@ -96,9 +96,7 @@ $copyOk = copy($url,$tmpfname);
 
 $holidaysDE = new JspitHoliday('de',$tmpfname);
 
-
 ```
-
 
 ## Define country depending holidays
 
@@ -163,9 +161,9 @@ Table holidays
 
 You can use this wildcards:
 
-{{easter}}    Catholic Easter
-{{easter_o}}  Orthodox Easter
-{{passover}}  Passover I
+- {{easter}}    Catholic Easter
+- {{easter_o}}  Orthodox Easter
+- {{passover}}  Passover I
 
 
 Others can be defined in an extension class.
