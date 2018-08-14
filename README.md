@@ -18,12 +18,16 @@ The database "JspitHoliday.sqlite" currently supports the following countries
 
 ## Usage
 
-Include class JspitHoliday (1 File) directly with require or use a autoloader.
+Include class JspitHoliday.php (1 File) directly with require or use a autoloader.
+Put JspitHoliday.sqlite in the same Directory how JspitHoliday.php.
+If you want to put the configuration JspitHoliday.sqlite in another directory, 
+then specify the full path in the 2.Parameter of the constructor.
 
 ```php
 <?php
-$holiday = new JspitHoliday("DE-BB","JspitHoliday.sqlite"); 
-$holidayList = $holiday->holidayList(2018,'en')
+
+$holiday = new JspitHoliday("DE-BB"); 
+$holidayList = $holiday->holidayList(2018,'en');
 
 ```
 $holidayList contain a array with all public holidays from 
@@ -55,7 +59,7 @@ Further examples:
 ```php
 $dateTime = new DateTime("1 May 2018 08:00");
 
-$holidaysDE = JspitHoliday::create("DE","JspitHoliday.sqlite");
+$holidaysDE = JspitHoliday::create("DE");
 if($holidaysDE->isHoliday($dateTime)) {
   echo "1 May 2018 is in DE a holiday";
 }
@@ -63,7 +67,7 @@ if($holidaysDE->isHoliday($dateTime)) {
 //holidayName
 $holidayName = $holidaysDE->holidayName('3 Oct','en');
 if($holidayName) {
-  echo $holidayName . "<br>";
+  echo $holidayName;
   //'Day of German Unity'
 }
 
