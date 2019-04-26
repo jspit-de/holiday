@@ -101,6 +101,56 @@ $copyOk = copy($url,$tmpfname);
 $holidaysDE = new JspitHoliday('de',$tmpfname);
 
 ```
+## Class-Info
+
+| Info | Value |
+| :--- | :---- |
+| Declaration | class JspitHoliday |
+| Datei | JspitHoliday.php |
+| Date/Time modify File | 2018-08-09 15:23:52 |
+| File-Size | 20 KByte |
+| MD5 File | 5796df9354e50ad44ef21df9930211d0 |
+| Version | 1.30 |
+| Date | 2018-08-09 |
+
+## Public Methods
+
+| Methods and Parameter | Description/Comments |
+| :-------------------- | :------------------- |
+| public function __construct($filterRegion = &quot;&quot;, $db = null, $typFilter = self::TYPE_ALL) | Constructs the class instance<br>@param string $filterRegion Country/Region ISO 3361 Alpha2 (&#039;DE&#039;,&#039;DE-BY&#039;..) <br>@param string $db filename for SQLite or PDO Object, default: holiday.sqlite<br>@param int $typFilte Filter for Holiday-Type for SQLite, default: holiday::TYPE_ALL<br>@throws InvalidArgumentException |
+| public static function create($filterRegion = &quot;&quot;, $sqliteFile = null, $typFilter = self::TYPE_ALL) | return a new class instance<br>@param string $filterRegion Country/Region ISO 3361 Alpha2 (&#039;DE&#039;,&#039;DE-BY&#039;..) <br>@param string $sqliteFile filename for SQLite, default: holiday.sqlite<br>@param int $typFilte Filter for Holiday-Type for SQLite, default: holiday::TYPE_ALL<br>@return object JspitHoliday<br>@throws InvalidArgumentException |
+| public function setLanguage($language = &quot;en-GB&quot;) | set Default Language<br>@param string $language p.E. &quot;de-DE&quot;, &quot;en-GB&quot; <br>@return $this |
+| public function getLanguage() | get Default Language<br>@return string default language |
+| public function setRegion($filterRegion) | set region<br>@param string $filterRegion Country/Region ISO 3361 Alpha2 (&#039;DE&#039;,&#039;DE-BY&#039;..) <br>@return $this |
+| public function getRegion() | Returns the current Region<br>@return string |
+| public function setTypFilter($typFilter = self::TYPE_ALL) | set Filter Holiday Type<br>@param int typ Filter<br>@throws Exception |
+| public function holidayName($date = &quot;today&quot;, $language = null) | get Name from a Holiday p.e: &quot;New Year&#039;s Day&quot;<br>@param $date: string, datetime-object or timestamp <br>@param $language string p.E. &quot;de-DE&quot;, &quot;en-GB&quot; <br>@return mixed string name if ok, false Error or Date is not a Holiday,<br>string &quot;?&quot; no Name for the language in Database  |
+| public function holidayList($year = null, $language = null) | return array( &#039;YYYY-MM-DD&#039; =&gt; holidayname, ..)<br>the array is sorted by ascending date<br>@param integer year full year p.E. 2018<br>@param string $language p.E. &quot;en_GB&quot;<br>@return array |
+| public function dateTimeList($year = null, $language = null) | return array of datetime objects<br>the array is sorted by ascending date<br>datetime objects are extended with public property holidayName<br>@param year integer full year p.E. 2018<br>@param $language string p.E. &quot;en_GB&quot;<br>@return array |
+| public function isHoliday($date = &#039;today&#039;) | return true id if date is a holiday or false<br>@param mixed $date string, datetime-object or timestamp <br>@return bool |
+| public function getNames($nameFilter = &quot;&quot;, $language = null, $onlyCurrentRegion = false) | get List of Names from DB as <br>array(idholiday =&gt; name, ..) by nameFilter and language<br>return false if not found<br>@param string $nameFilter Filter for name , caseinsenitive <br>@param string $language how de or de-ch, default Default Language<br>@param bool $onlyCurrentRegion bool, default false<br>@return mixed  |
+| public function holidayNameList($nameFilter = &quot;&quot;,$yearStart = null, $countYears=1, $language = null) | get List of Names from DB as <br>array(idholiday =&gt; name, ..) by nameFilter and language<br>return false if not found<br>@param nameFilter: Filter for name , caseinsenitive <br>@param yearStart: integer YYYY , default current year<br>@param countYears: default 1 or end of year (end of year &gt; <br>@param language string how de or de-ch, default Default Language<br>@return mixed |
+| public function getConfig() | get config, may use as debugging info<br>@return array |
+| public static function getEasterDate($year,$orthodox = false) | get easter-date as string YYYY-MM-DD |
+| public static function getPassoverDate($year) | calculate the first day of Passover (Gauß)<br>@params: $year integer as YYYY, interval 1900 to 2099<br>@return date as string YYY-MM-DD |
+| public static function getHijriDate($gregYear, $hijriMonth, $hijriDay) | get the gregorian Date for the year $gregYear<br>@param integer $gregYear: greg.Year (2007..2031)<br>@param integer $hijriMonth: Month hijri-Calendar<br>@param integer $hijriMonth: Month hijri-Calendar<br>@return date as string YYY-MM-DD or false if error |
+| public static function GregToHijri($y,$m,$d) | convert Gregorian Date to Hijri<br>return array($year, $month, $day) |
+| public static function HijriToGreg($y,$m,$d) | convert Hijri Date to Gregorian<br>return array($year, $month, $day) |
+| public static function getJewishDate($gregYear, $jewishMonth, $jewishDay) | return string date YYYY-MM-DD; |
+| public static function getCalendarDate($calendar, $calMonth, $calDay, $gregYear) | get greg.Date from $calMonth and $calDay in calendar $cal<br>return string date &quot;Y-m-d&quot; or false if error |
+
+## Constants
+
+| Declaration/Name | Value | Description/Comments |
+| :--------------- | :---- | :------------------- |
+|  const TYPE_OFFICIAL = 1; | 1 |   |
+|  const TYPE_BANK = 2; | 2 |   |
+|  const TYPE_OBSERVED = 4; | 4 |   |
+|  const TYPE_OTHER = 8; | 8 |   |
+|  const TYPE_4 = 16; | 16 |   |
+|  const TYPE_5 = 32; | 32 |   |
+|  const TYPE_6 = 64; | 64 |   |
+|  const TYPE_ALL = 0x7FFF; | 32767 |   |
 
 ## Define country depending holidays
 
