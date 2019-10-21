@@ -2,10 +2,10 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: JspitHoliday - PHP class                                       |
-|   Version: 1.30                                                           |
-|      Date: 2018-08-09                                                     |
+|   Version: 1.31                                                           |
+|      Date: 2019-10-19                                                     |
 | ------------------------------------------------------------------------- |
-| Copyright © 2018, Peter Junk alias jspit All Rights Reserved.             |
+| Copyright © 2018,2019 Peter Junk alias jspit All Rights Reserved.         |
 '---------------------------------------------------------------------------'
 */
 
@@ -184,6 +184,56 @@ class JspitHoliday
     }
     ksort($hList); 
     return $hList;
+  }
+
+  /**
+   * returns array of string dates Y-m-d 
+   * wich are a holiday between two dates
+   * @param mixed $startDate
+   * @param mixed $endDate
+   * @param array $weekDayFilterList with numbers 0..6 for Sunday ..Saturday
+   *   default null for all weekdays 
+   * @return array of strings ["Y-m-d",..]
+   */
+  public function dateList($startDate, $endDate, $weekDayFilterList = null)
+  {
+    if(is_string($startDate)) {
+      $startDate = date_create($startDate)->format("Y-m-d");
+    } elseif($startDate instanceof DateTime) {
+      $startDate = $startDate->format("Y-m-d");
+    } elseif(is_int($startDate)) {
+      $startDate = date("Y-m-d", $startDate);
+    } else {
+      throw new InvalidArgumentException("incorrect Parameter date '$startDate' "); 
+    }
+
+    if(is_string($endDate)) {
+      $endDate = date_create($endDate)->format("Y-m-d");
+    } elseif($endDate instanceof DateTime) {
+      $endDate = $endDate->format("Y-m-d");
+    } elseif(is_int($endDate)) {
+      $endDate = date("Y-m-d", $endDate);
+    } else {
+      throw new InvalidArgumentException("incorrect Parameter date '$endDate' "); 
+    }
+
+    $startYear = (int)substr($startDate,0,4);
+    $endYear = (int)substr($endDate,0,4);
+    $dateArr = array();
+    foreach($this->config as $id => $row){
+      for($year = $startYear; $year <= $endYear; $year++){
+        $curDate = $this->getDateFromDBrow($row, $year);
+        if($curDate !== false AND $curDate >= $startDate AND $curDate <= $endDate){
+          if(is_array($weekDayFilterList)){
+            $numberWeekDay = (int)date_create($curDate)->format('w');
+            if(!in_array($numberWeekDay,$weekDayFilterList)) continue;
+          }
+          $dateArr[] = $curDate;
+        } 
+      }
+    }
+    sort($dateArr);
+    return $dateArr;
   }
   
  /**
