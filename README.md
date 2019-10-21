@@ -54,6 +54,13 @@ Examples: "DE", "NL", "DE-BY", "DE-BY-SCH-A"
 Last for Germany-Bavaria-Schwabing-Augsburg(City). 
 The languages can be divided into dialects, e.g. 'de-DE' , 'de-CH'.
 
+Get all holiday dates between $dateStart and $dateEnd which are from a Monday to Friday.
+
+```php
+$holiday = JspitHoliday::create('de-BE');
+$dateArray = $holiday->dateList("2019-03-01","2019-03-31",array(1,2,3,4,5));
+```
+
 Further examples:
 
 ```php
@@ -126,6 +133,7 @@ $holidaysDE = new JspitHoliday('de',$tmpfname);
 | public function setTypFilter($typFilter = self::TYPE_ALL) | set Filter Holiday Type<br>@param int typ Filter<br>@throws Exception |
 | public function holidayName($date = &quot;today&quot;, $language = null) | get Name from a Holiday p.e: &quot;New Year&#039;s Day&quot;<br>@param $date: string, datetime-object or timestamp <br>@param $language string p.E. &quot;de-DE&quot;, &quot;en-GB&quot; <br>@return mixed string name if ok, false Error or Date is not a Holiday,<br>string &quot;?&quot; no Name for the language in Database  |
 | public function holidayList($year = null, $language = null) | return array( &#039;YYYY-MM-DD&#039; =&gt; holidayname, ..)<br>the array is sorted by ascending date<br>@param integer year full year p.E. 2018<br>@param string $language p.E. &quot;en_GB&quot;<br>@return array |
+| public function dateList($startDate, $endDate, $weekDayFilterList = null) | returns array of string dates Y-m-d <br>wich are a holiday between two dates<br>@param mixed $startDate<br>@param mixed $endDate<br>@param array $weekDayFilterList with numbers 0..6 for Sunday ..Saturday<br>default null for all weekdays <br>@return array of strings [&quot;Y-m-d&quot;,..] |
 | public function dateTimeList($year = null, $language = null) | return array of datetime objects<br>the array is sorted by ascending date<br>datetime objects are extended with public property holidayName<br>@param year integer full year p.E. 2018<br>@param $language string p.E. &quot;en_GB&quot;<br>@return array |
 | public function isHoliday($date = &#039;today&#039;) | return true id if date is a holiday or false<br>@param mixed $date string, datetime-object or timestamp <br>@return bool |
 | public function getNames($nameFilter = &quot;&quot;, $language = null, $onlyCurrentRegion = false) | get List of Names from DB as <br>array(idholiday =&gt; name, ..) by nameFilter and language<br>return false if not found<br>@param string $nameFilter Filter for name , caseinsenitive <br>@param string $language how de or de-ch, default Default Language<br>@param bool $onlyCurrentRegion bool, default false<br>@return mixed  |
