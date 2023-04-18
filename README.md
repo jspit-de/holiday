@@ -300,4 +300,4 @@ For these cases, the date must be set for each year. With a special wildcard you
 
 ## Requirements
 
-PHP 5.4 - 7.2
+PHP 5.6 - 8.2
