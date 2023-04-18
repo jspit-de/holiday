@@ -2,12 +2,13 @@
 /**
 .---------------------------------------------------------------------------.
 |  Software: JspitHoliday - PHP class                                       |
-|   Version: 1.31                                                           |
-|      Date: 2019-10-19                                                     |
+|   Version: 1.32                                                           |
+|      Date: 2023-04-18                                                     |
 | ------------------------------------------------------------------------- |
 | Copyright © 2018,2019 Peter Junk alias jspit All Rights Reserved.         |
 '---------------------------------------------------------------------------'
 */
+#[AllowDynamicProperties] 
 
 class JspitHoliday
 {
@@ -65,7 +66,7 @@ class JspitHoliday
         
         $this->createConfig($filterRegion, $typFilter);
       } catch(Exception $e) {
-        throw new InvalidArgumentException("Faulty SQLite-DB '$sqliteFile'");  
+        throw new InvalidArgumentException("Faulty SQLite-DB '$db'");  
       }
     }
   }
@@ -173,6 +174,9 @@ class JspitHoliday
   */
   public function holidayList($year = null, $language = null){
     if(empty($year)) $year = date('Y');
+    if($year < 1900 OR $year > 2099){
+      throw new InvalidArgumentException("incorrect Parameter year '$year' "); 
+    }
     if($language === null) $language = $this->language;
 
     $hList = array();
@@ -439,7 +443,7 @@ class JspitHoliday
         $date->modify($modify);
       }        
       $errArr = date_get_last_errors();
-      if($errArr['error_count']) return false;
+      if($errArr && $errArr['error_count']) return false;
     }
     
     return $date->format("Y-m-d");
